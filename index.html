@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Emoji</title>
+    <style>
+        body {
+            background-color: rgb(132, 231, 231);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #emojiContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        #emojiText {
+            font-size: 5rem; /* Adjust the size as needed */
+        }
+    </style>
+</head>
+<body>
+    <div id="emojiContainer">
+        <p id="emojiText">Loading...</p>
+    </div>
+    <button id="getNewEmoji">Get New Emoji</button>
+
+    <script>
+        const emojiContainer = document.getElementById('emojiContainer');
+        const emojiText = document.getElementById('emojiText');
+        const getNewEmojiButton = document.getElementById('getNewEmoji');
+
+        function displayRandomEmoji() {
+            // Show a loading message while fetching the data
+            emojiText.textContent = 'Loading...';
+
+            fetch('https://emojihub.yurace.pro/api/random')
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming the data is an object with name and unicode properties
+                    if (data.name && data.unicode && data.unicode.length > 0) {
+                        // Get the first Unicode value and convert it to an emoji character
+                        const emojiCharacter = String.fromCodePoint(parseInt(data.unicode[0].replace('U+', ''), 16));
+
+                        // Update the emoji text with the emoji character
+                        emojiText.textContent = emojiCharacter;
+
+                        // Ensure emoji is displayed properly using innerHTML
+                        emojiContainer.innerHTML = `<p id="emojiText">${emojiCharacter}</p>`;
+                    } else {
+                        emojiText.textContent = 'Failed to fetch the random emoji. Please try again later.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching the random emoji:', error);
+                    emojiText.textContent = 'Failed to fetch the random emoji. Please try again later.';
+                });
+        }
+
+        // Initial display of a random emoji when the page loads
+        displayRandomEmoji();
+
+        // Add a click event to the button to fetch and display a new random emoji on button click
+        getNewEmojiButton.addEventListener('click', displayRandomEmoji);
+    </script>
+</body>
+</html>
